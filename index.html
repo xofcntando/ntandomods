@@ -99,18 +99,18 @@
   <section id="sound">
     <div class="sec-head">
       <h2>The soundtrack</h2>
-      <p>This page plays its own background track, resolved live from the Ntandomods API.</p>
+      <p>This page plays its own background track — <b>Why Me</b> by MiyaVi Amore, bundled with the site so it starts instantly.</p>
     </div>
     <div class="track-strip">
       <img class="art" id="trackArt" src="assets/logo.png" alt="">
       <div class="meta">
-        <b id="trackTitle">Why Me?</b>
-        <span id="trackArtist">Mai Mai</span>
-        <span class="src" id="trackSrc">loading from API…</span>
+        <b id="trackTitle">Why Me</b>
+        <span id="trackArtist">MiyaVi Amore</span>
+        <span class="src" id="trackSrc">why me · miyavi amore</span>
       </div>
       <div class="spacer"></div>
       <button class="btn primary" id="stripPlay" type="button">▶ Play</button>
-      <p class="note">Audio streams from the live API and falls back to a bundled copy if the link expires.</p>
+      <p class="note">The full track ships with the page, so it never expires and never buffers.</p>
     </div>
   </section>
 
@@ -160,8 +160,8 @@
   </button>
   <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <div class="pinfo">
-    <b id="pTitle">Why Me?</b>
-    <span id="pArtist">Mai Mai · Ntandomods</span>
+    <b id="pTitle">Why Me</b>
+    <span id="pArtist">MiyaVi Amore · Ntandomods</span>
   </div>
   <div class="volwrap">
     <button id="muteBtn" type="button" aria-label="Mute">
@@ -178,7 +178,7 @@
   <button class="dismiss" id="promptClose" type="button" aria-label="Dismiss">×</button>
 </div>
 
-<audio id="audio" preload="auto" loop crossorigin="anonymous"></audio>
+<audio id="audio" preload="auto" loop muted crossorigin="anonymous"></audio>
 
 <script src="app.js"></script>
 </body>

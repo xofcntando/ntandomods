@@ -5,12 +5,12 @@
    ============================================================ */
 
 const CONFIG = {
-  API: 'https://ladybug-api-e8q8.onrender.com',
-  KEY: 'nzN64y+bq1bd/QwnMLOxxQDgG5AL78ul82qg4tPI1lk=',
-  QUERY: 'why me',
+  // The track ships with the site, so playback starts instantly and never
+  // depends on an API call, a signed URL, or a 30-minute expiry.
+  SRC: 'assets/why-me.mp3',
   FALLBACK: 'assets/why-me.mp3',
-  DEFAULT_TITLE: 'Why Me?',
-  DEFAULT_ARTIST: 'Mai Mai',
+  DEFAULT_TITLE: 'Why Me',
+  DEFAULT_ARTIST: 'MiyaVi Amore',
 };
 
 const $ = s => document.querySelector(s);
@@ -61,45 +61,22 @@ function setArt(url) {
   img.onerror = () => { img.src = 'assets/logo.png'; };
 }
 
-/* ---------- resolve the track ---------- */
-async function resolveTrack() {
-  const url = `${CONFIG.API}/v1/yt/play?query=${encodeURIComponent(CONFIG.QUERY)}` +
-              `&type=audio&quality=480&apikey=${encodeURIComponent(CONFIG.KEY)}`;
-  const res = await fetch(url, { headers: { Accept: 'application/json' } });
-  if (!res.ok) throw new Error(`API returned ${res.status}`);
-  const data = await res.json();
-  const file = data && data.file;
-  if (!file || !file.download_url) throw new Error('API response had no file');
+/* ---------- load the track ---------- */
+function loadAudio() {
+  if (resolved) return;
 
-  // download_url is relative and needs the key
-  const base = file.download_url.startsWith('http') ? file.download_url : CONFIG.API + file.download_url;
-  const src = `${base}${base.includes('?') ? '&' : '?'}apikey=${encodeURIComponent(CONFIG.KEY)}`;
-
-  const title = (data.title || CONFIG.DEFAULT_TITLE).replace(/\s*\(Official.*?\)\s*/i, '').trim();
+  const title = CONFIG.DEFAULT_TITLE;
   const artist = CONFIG.DEFAULT_ARTIST;
 
   $('#trackTitle').textContent = title;
   $('#trackArtist').textContent = artist;
-  $('#trackSrc').textContent = 'live · ladybug api';
+  $('#trackSrc').textContent = 'why me · miyavi amore';
   $('#pTitle').textContent = title;
   $('#pArtist').textContent = `${artist} · Ntandomods`;
-  setArt(data.thumbnail);
+  setArt('assets/logo.png');
 
-  return src;
-}
-
-async function loadAudio() {
-  if (resolved) return;
-  try {
-    audio.src = await resolveTrack();
-    resolved = true;
-  } catch (err) {
-    // API down, expired, or blocked -> bundled copy
-    console.warn('[Ntandomods] API resolve failed, using bundled audio:', err.message);
-    audio.src = CONFIG.FALLBACK;
-    resolved = true;
-    $('#trackSrc').textContent = 'bundled fallback';
-  }
+  audio.src = CONFIG.SRC;
+  resolved = true;
 }
 
 /* ---------- playback ---------- */
@@ -202,12 +179,11 @@ audio.addEventListener('play', paint);
 audio.addEventListener('pause', paint);
 audio.addEventListener('ended', paint);
 audio.addEventListener('error', () => {
-  // a live link can expire mid-session; swap to the bundled copy once
-  if (audio.src && !audio.src.includes(CONFIG.FALLBACK) && audio.error) {
-    console.warn('[Ntandomods] stream failed, switching to bundled audio');
-    audio.src = CONFIG.FALLBACK;
-    $('#trackSrc').textContent = 'bundled fallback';
-    if (!userPaused) audio.play().catch(() => {});
+  // the local file is the only source now; report instead of looping
+  if (audio.error) {
+    console.warn('[Ntandomods] audio error code', audio.error.code);
+    $('#trackSrc').textContent = 'audio unavailable';
+    prompt.hidden = true;
   }
 });
 
@@ -254,27 +230,31 @@ $('#year').textContent = new Date().getFullYear();
 //   2. if blocked, play MUTED — always permitted — then unmute on first gesture
 async function boot() {
   player.classList.remove('hidden');
-  await loadAudio();
+  loadAudio();
   audio.volume = pref.volume;
-  audio.muted = pref.muted;
 
-  try {
-    await audio.play();
-    userPaused = false;
-    paint();
-    return;
-  } catch { /* blocked — fall through to muted autoplay */ }
-
+  // 1. Try unmuted — allowed on repeat visits and when the browser trusts the site.
   if (!pref.muted) {
-    autoMuted = true;
-    audio.muted = true;
+    audio.muted = false;
     try {
       await audio.play();
       userPaused = false;
-    } catch {
-      autoMuted = false;
-      audio.muted = pref.muted;
-    }
+      paint();
+      return;
+    } catch (e) { window.__bootErr1 = e && e.name; }
+  }
+
+  // 2. Fall back to muted autoplay. The element carries the `muted` attribute,
+  //    which is what browsers actually check — this is always permitted.
+  audio.muted = true;
+  autoMuted = !pref.muted;
+  try {
+    await audio.play();
+    userPaused = false;
+  } catch (e) {
+    window.__bootErr2 = e && e.name;
+    autoMuted = false;
+    audio.muted = pref.muted;
   }
   paint();
 
