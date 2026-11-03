@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0a0c">
+<title>Ntandomods — Mods, built different</title>
+<meta name="description" content="Ntandomods — a modding studio for games, tools and interfaces. Built by Ntando.">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true"></div>
+<div class="grid-lines" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="lockup" href="#top" aria-label="Ntandomods home">
+    <img src="assets/logo.png" alt="Ntandomods logo">
+    <span class="wordmark">Ntando<b>mods</b></span>
+  </a>
+  <nav class="navlinks" aria-label="Main">
+    <a href="#work">What we build</a>
+    <a href="#sound">Soundtrack</a>
+    <a href="#about">About</a>
+  </nav>
+  <a class="navcta" href="#work">Start a project</a>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <div class="hero">
+    <div>
+      <span class="eyebrow"><i></i> Modding studio · est. Ntando</span>
+      <h1>Mods, built <span class="accent">different</span>.</h1>
+      <p class="lede">
+        Ntandomods is a small studio shipping game mods, developer tools and interfaces that
+        feel like they belong in the game — not bolted onto it. Clean code, sharp design,
+        zero bloat.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#work">See what we build</a>
+        <button class="btn ghost" id="heroPlay" type="button">
+          <span id="heroPlayIcon">▶</span> <span id="heroPlayLabel">Play the soundtrack</span>
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div><b>70+</b><span>Tools shipped</span></div>
+        <div><b>24/7</b><span>API uptime</span></div>
+        <div><b>1</b><span>Obsession: polish</span></div>
+      </div>
+    </div>
+
+    <div class="logo-stage">
+      <div class="halo" aria-hidden="true"></div>
+      <div class="logo-card">
+        <img src="assets/logo.png" alt="Ntandomods ladybug emblem">
+      </div>
+      <span class="logo-tag">The Ntandomods mark</span>
+    </div>
+  </div>
+
+  <!-- ============ WORK ============ -->
+  <section id="work">
+    <div class="sec-head">
+      <h2>What we build</h2>
+      <p>Every project starts from the same place: does it feel good to use? If not, it doesn't ship.</p>
+    </div>
+    <div class="cards">
+      <article class="card">
+        <div class="ico">🎮</div>
+        <h3>Game mods</h3>
+        <p>Gameplay overhauls, quality-of-life patches and custom content — balanced, tested, and stable across updates.</p>
+      </article>
+      <article class="card">
+        <div class="ico">⚡</div>
+        <h3>Developer APIs</h3>
+        <p>A fast, keyed REST surface for media, AI, scraping and 70+ utilities. One base URL, predictable responses.</p>
+      </article>
+      <article class="card">
+        <div class="ico">🎨</div>
+        <h3>Interfaces</h3>
+        <p>Consoles and dashboards designed to be readable at a glance — dark-mode first, keyboard friendly.</p>
+      </article>
+      <article class="card">
+        <div class="ico">🔧</div>
+        <h3>Tooling</h3>
+        <p>Small, sharp utilities that remove a step from your day. If we need it twice, we build it properly.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ SOUND ============ -->
+  <section id="sound">
+    <div class="sec-head">
+      <h2>The soundtrack</h2>
+      <p>This page plays its own background track, resolved live from the Ntandomods API.</p>
+    </div>
+    <div class="track-strip">
+      <img class="art" id="trackArt" src="assets/logo.png" alt="">
+      <div class="meta">
+        <b id="trackTitle">Why Me?</b>
+        <span id="trackArtist">Mai Mai</span>
+        <span class="src" id="trackSrc">loading from API…</span>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn primary" id="stripPlay" type="button">▶ Play</button>
+      <p class="note">Audio streams from the live API and falls back to a bundled copy if the link expires.</p>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section id="about">
+    <div class="sec-head">
+      <h2>Under Ntandomods</h2>
+      <p>
+        Everything we release — the mods, the API, the console — carries the same mark and the
+        same standard. One brand, one bar for quality.
+      </p>
+    </div>
+    <div class="cards">
+      <article class="card">
+        <div class="ico">🐞</div>
+        <h3>The mark</h3>
+        <p>A geometric ladybug: small, resilient, and impossible to ignore. Red shell, black spine, hex spots for the tech.</p>
+      </article>
+      <article class="card">
+        <div class="ico">📦</div>
+        <h3>One stack</h3>
+        <p>Mods, API and UI share a single design language so the whole ecosystem feels like one product.</p>
+      </article>
+      <article class="card">
+        <div class="ico">🚀</div>
+        <h3>Ship small</h3>
+        <p>Frequent, focused releases beat big risky ones. Every push is tested before it goes live.</p>
+      </article>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <a class="lockup" href="#top">
+    <img src="assets/logo.png" alt="">
+    <span class="wordmark">Ntando<b>mods</b></span>
+  </a>
+  <span class="spacer"></span>
+  <span>© <span id="year">2026</span> Ntandomods. All rights reserved.</span>
+</footer>
+
+<!-- ============ background player ============ -->
+<div class="player hidden" id="player" role="region" aria-label="Background music player">
+  <button class="playbtn" id="playBtn" type="button" aria-label="Play or pause">
+    <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+  </button>
+  <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="pinfo">
+    <b id="pTitle">Why Me?</b>
+    <span id="pArtist">Mai Mai · Ntandomods</span>
+  </div>
+  <div class="volwrap">
+    <button id="muteBtn" type="button" aria-label="Mute">
+      <svg id="muteIcon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>
+    </button>
+    <input class="vol" id="vol" type="range" min="0" max="1" step="0.01" value="0.45" aria-label="Volume">
+  </div>
+</div>
+
+<!-- first-visit listen prompt -->
+<div class="listen-prompt" id="prompt" hidden>
+  <p><b>Turn on the soundtrack?</b><br>Background music, one click.</p>
+  <button class="btn primary" id="promptPlay" type="button">Play</button>
+  <button class="dismiss" id="promptClose" type="button" aria-label="Dismiss">×</button>
+</div>
+
+<audio id="audio" preload="auto" loop crossorigin="anonymous"></audio>
+
+<script src="app.js"></script>
+</body>
+</html>
