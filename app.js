@@ -25,6 +25,7 @@ const PAUSE_PATH = 'M7 5h4v14H7zM13 5h4v14h-4z';
 
 let resolved = false;   // true once a playable src is set
 let userPaused = false; // user explicitly paused -> don't auto-resume
+let autoMuted = false;  // we muted ourselves to slip past the autoplay block
 
 /* ---------- preferences ---------- */
 const pref = {
@@ -116,7 +117,7 @@ function paint() {
 async function play() {
   await loadAudio();
   audio.volume = pref.volume;
-  audio.muted = pref.muted;
+  audio.muted = pref.muted || autoMuted;
   try {
     await audio.play();
     userPaused = false;
@@ -125,9 +126,36 @@ async function play() {
   } catch (err) {
     // autoplay blocked -> ask for one click
     player.classList.remove('hidden');
-    if (!userPaused) prompt.hidden = false;
+    if (!userPaused) showPrompt('play');
   }
   paint();
+}
+
+/* The prompt doubles as an "unmute" nudge when we had to start silent. */
+function showPrompt(mode) {
+  const p = prompt.querySelector('p');
+  const btn = $('#promptPlay');
+  if (mode === 'unmute') {
+    p.innerHTML = '<b>Sound is on mute</b><br>Tap anywhere to turn the music up.';
+    btn.textContent = 'Unmute';
+  } else {
+    p.innerHTML = '<b>Turn on the soundtrack?</b><br>Background music, one click.';
+    btn.textContent = 'Play';
+  }
+  prompt.dataset.mode = mode;
+  prompt.hidden = false;
+}
+
+/* Called on the first real gesture. Restores audio after a muted autoplay. */
+function unlock() {
+  if (!autoMuted) return false;
+  autoMuted = false;
+  audio.muted = pref.muted;
+  if (!pref.muted && audio.volume === 0) audio.volume = pref.volume || 0.45;
+  if (audio.paused && !userPaused) audio.play().catch(() => {});
+  prompt.hidden = true;
+  paint();
+  return true;
 }
 
 function pause() {
@@ -144,8 +172,31 @@ function toggle() {
 playBtn.addEventListener('click', toggle);
 $('#heroPlay').addEventListener('click', toggle);
 $('#stripPlay').addEventListener('click', toggle);
-$('#promptPlay').addEventListener('click', () => { prompt.hidden = true; play(); });
-$('#promptClose').addEventListener('click', () => { prompt.hidden = true; userPaused = true; });
+$('#promptPlay').addEventListener('click', () => {
+  if (prompt.dataset.mode === 'unmute') { unlock(); return; }
+  prompt.hidden = true;
+  play();
+});
+$('#promptClose').addEventListener('click', () => {
+  prompt.hidden = true;
+  if (prompt.dataset.mode === 'unmute') {
+    // keep the music running, just silent for this session
+    autoMuted = false;
+    audio.muted = true;
+  } else {
+    userPaused = true;
+  }
+  paint();
+});
+
+/* First gesture anywhere restores sound after a muted autoplay. */
+['pointerdown', 'touchstart', 'scroll'].forEach(evt => {
+  window.addEventListener(evt, e => {
+    if (!autoMuted) return;
+    if (e.target.closest && e.target.closest('#muteBtn, #vol')) return; // those handle themselves
+    unlock();
+  }, { passive: true, capture: true });
+});
 
 audio.addEventListener('play', paint);
 audio.addEventListener('pause', paint);
@@ -171,7 +222,9 @@ vol.addEventListener('input', () => {
 
 $('#muteBtn').addEventListener('click', () => {
   audio.muted = !audio.muted;
+  autoMuted = false;          // an explicit click wins over the autoplay workaround
   pref.muted = audio.muted;
+  if (!audio.muted && audio.paused && !userPaused) audio.play().catch(() => {});
   paint();
 });
 
@@ -179,6 +232,7 @@ $('#muteBtn').addEventListener('click', () => {
 document.addEventListener('keydown', e => {
   if (e.code === 'Space' && !/^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/.test(document.activeElement?.tagName || '')) {
     e.preventDefault();
+    if (unlock()) return;     // this keypress just turned the sound on
     toggle();
   }
 });
@@ -195,8 +249,37 @@ document.querySelectorAll('.card').forEach(card => {
 $('#year').textContent = new Date().getFullYear();
 
 /* ---------- boot ---------- */
-// Try to start silently; browsers will block sound until a gesture.
-player.classList.remove('hidden');
-play().then(() => {
-  if (audio.paused) prompt.hidden = false; // autoplay blocked, offer the button
-});
+// Autoplay strategy:
+//   1. try unmuted play (allowed on repeat visits / some browsers)
+//   2. if blocked, play MUTED — always permitted — then unmute on first gesture
+async function boot() {
+  player.classList.remove('hidden');
+  await loadAudio();
+  audio.volume = pref.volume;
+  audio.muted = pref.muted;
+
+  try {
+    await audio.play();
+    userPaused = false;
+    paint();
+    return;
+  } catch { /* blocked — fall through to muted autoplay */ }
+
+  if (!pref.muted) {
+    autoMuted = true;
+    audio.muted = true;
+    try {
+      await audio.play();
+      userPaused = false;
+    } catch {
+      autoMuted = false;
+      audio.muted = pref.muted;
+    }
+  }
+  paint();
+
+  if (autoMuted) showPrompt('unmute');
+  else if (audio.paused && !userPaused) showPrompt('play');
+}
+
+boot();
